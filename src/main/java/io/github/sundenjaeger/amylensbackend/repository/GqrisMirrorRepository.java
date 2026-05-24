@@ -6,6 +6,9 @@ import io.github.sundenjaeger.amylensbackend.model.GqrisMirror;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface GqrisMirrorRepository extends JpaRepository<GqrisMirror, Long> {
+    List<GqrisMirror> findByVariety(String variety);
 }
