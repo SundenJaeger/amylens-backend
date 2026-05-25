@@ -2,6 +2,8 @@
 
 package io.github.sundenjaeger.amylensbackend.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -21,7 +23,9 @@ public record SessionRequest(
         String amyloseClass,
 
         @NotNull(message = "Confidence score is required")
-        Integer confidenceScore,
+        @Min(0)
+        @Max(1)
+        Double confidenceScore,
 
         @NotNull(message = "Captured At is required")
         Instant capturedAt,

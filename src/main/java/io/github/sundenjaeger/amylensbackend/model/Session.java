@@ -33,7 +33,7 @@ public class Session {
     private String amyloseClass;
 
     @Column(name = "confidence_score", nullable = false)
-    private Integer confidenceScore;
+    private Double confidenceScore;
 
     @Column(name = "captured_at", nullable = false)
     private Instant capturedAt;
