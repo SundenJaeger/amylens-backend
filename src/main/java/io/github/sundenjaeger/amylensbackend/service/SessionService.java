@@ -81,7 +81,7 @@ public class SessionService {
             session.setReviewerNote(dto.reviewerNote());
         }
 
-        session.setVerdict(dto.action().toUpperCase());
+        session.setVerdict(dto.action().equalsIgnoreCase("ACCEPT") ? "ACCEPTED" : "REJECTED");
         session.setReviewerIdentity(dto.reviewerIdentity());
         session.setNeedsReview(false);
 
