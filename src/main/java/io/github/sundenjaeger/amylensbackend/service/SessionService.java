@@ -13,6 +13,8 @@ import io.github.sundenjaeger.amylensbackend.model.Session;
 import io.github.sundenjaeger.amylensbackend.repository.DeviceRepository;
 import io.github.sundenjaeger.amylensbackend.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class SessionService {
     private final DeviceRepository deviceRepository;
     private final AnomalyDetectionService anomalyDetectionService;
 
+    @CacheEvict(value = "sessions", allEntries = true)
     public Session ingest(SessionRequest dto) {
         Device device = deviceRepository.findBySsaid(dto.deviceSsaid())
                 .orElseThrow(() -> new UnauthorizedDeviceException("Device not registered: " + dto.deviceSsaid()));
@@ -52,6 +55,7 @@ public class SessionService {
         return saved;
     }
 
+    @Cacheable(value = "sessions", key = "#variety + '-' + #status")
     public List<Session> findAll(String variety, String status) {
         if (variety != null && status != null) {
             return sessionRepository.findByVariety(variety)
@@ -70,6 +74,7 @@ public class SessionService {
         return sessionRepository.findAll();
     }
 
+    @CacheEvict(value = "sessions", allEntries = true)
     public Session review(Long id, SessionReviewRequest dto) {
         Session session = sessionRepository.findById(id)
                 .orElseThrow(() -> new SessionNotFoundException("Session not found: " + id));

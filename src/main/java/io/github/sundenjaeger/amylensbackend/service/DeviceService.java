@@ -9,6 +9,8 @@ import io.github.sundenjaeger.amylensbackend.exception.UnauthorizedDeviceExcepti
 import io.github.sundenjaeger.amylensbackend.model.Device;
 import io.github.sundenjaeger.amylensbackend.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -51,10 +53,12 @@ public class DeviceService {
         return device.getLinkedUserNames();
     }
 
+    @Cacheable("allDevices")
     public List<Device> findAll() {
         return deviceRepository.findAll();
     }
 
+    @CacheEvict(value = {"devices", "allDevices"}, allEntries = true)
     public Device approve(Long id, List<String> usernames) {
         Device device = deviceRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedDeviceException("Device not found: " + id));
@@ -65,6 +69,7 @@ public class DeviceService {
         return deviceRepository.save(device);
     }
 
+    @CacheEvict(value = {"devices", "allDevices"}, allEntries = true)
     public Device deny(Long id) {
         Device device = deviceRepository.findById(id).
                 orElseThrow(() -> new UnauthorizedDeviceException("Device not found: " + id));

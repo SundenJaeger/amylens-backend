@@ -9,6 +9,7 @@ import io.github.sundenjaeger.amylensbackend.dto.GqrisImportResult;
 import io.github.sundenjaeger.amylensbackend.model.GqrisMirror;
 import io.github.sundenjaeger.amylensbackend.repository.GqrisMirrorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ import java.util.List;
 public class GqrisImportService {
     private final GqrisMirrorRepository gqrisRepo;
 
+    @CacheEvict(value = "gqrisMirror", allEntries = true)
     public GqrisImportResult importFromCsv(MultipartFile file) throws IOException {
         int rowsImported = 0;
         int rowsSkipped = 0;
