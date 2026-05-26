@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.List;
 public class DeviceService {
     private final DeviceRepository deviceRepository;
 
+    @Transactional
     public Device register(DeviceRegistration registration) {
         return deviceRepository.findBySsaid(registration.ssaid())
                 .orElseGet(() -> {
@@ -35,6 +37,7 @@ public class DeviceService {
                 });
     }
 
+    @Transactional(readOnly = true)
     public DeviceAuthResponse checkAuthStatus(String ssaid) {
         Device device = deviceRepository.findBySsaid(ssaid)
                 .orElseThrow(() -> new UnauthorizedDeviceException("Device not registered: " + ssaid));
@@ -42,6 +45,7 @@ public class DeviceService {
         return new DeviceAuthResponse(device.getStatus().name());
     }
 
+    @Transactional(readOnly = true)
     public List<String> getAuthorizedUsers(String ssaid) {
         Device device = deviceRepository.findBySsaid(ssaid)
                 .orElseThrow(() -> new UnauthorizedDeviceException("Device not found: " + ssaid));
@@ -58,6 +62,7 @@ public class DeviceService {
         return deviceRepository.findAll();
     }
 
+    @Transactional
     @CacheEvict(value = {"devices", "allDevices"}, allEntries = true)
     public Device approve(Long id, List<String> usernames) {
         Device device = deviceRepository.findById(id)
@@ -69,6 +74,7 @@ public class DeviceService {
         return deviceRepository.save(device);
     }
 
+    @Transactional
     @CacheEvict(value = {"devices", "allDevices"}, allEntries = true)
     public Device deny(Long id) {
         Device device = deviceRepository.findById(id).

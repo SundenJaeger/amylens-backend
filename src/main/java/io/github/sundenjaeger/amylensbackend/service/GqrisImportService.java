@@ -11,6 +11,7 @@ import io.github.sundenjaeger.amylensbackend.repository.GqrisMirrorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -24,6 +25,7 @@ import java.util.List;
 public class GqrisImportService {
     private final GqrisMirrorRepository gqrisRepo;
 
+    @Transactional
     @CacheEvict(value = "gqrisMirror", allEntries = true)
     public GqrisImportResult importFromCsv(MultipartFile file) throws IOException {
         int rowsImported = 0;

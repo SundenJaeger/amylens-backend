@@ -16,6 +16,7 @@ import java.util.List;
 public class VarietyService {
     private final VarietyRepository varietyRepository;
 
+    @Transactional(readOnly = true)
     @Cacheable("varieties")
     public List<Variety> findAll() {
         return varietyRepository.findAll();
