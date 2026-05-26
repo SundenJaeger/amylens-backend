@@ -25,7 +25,7 @@ public class AnomalyDetectionService {
         String verdict;
         String verdictReason;
 
-        if (session.getConfidenceScore() < 85) {
+        if (session.getConfidenceScore() < 0.85) {
             verdict = "needs_review";
             verdictReason = "low_confidence";
         } else if (history.size() < 3) {
