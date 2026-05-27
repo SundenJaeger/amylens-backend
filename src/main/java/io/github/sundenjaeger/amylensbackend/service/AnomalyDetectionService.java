@@ -25,10 +25,7 @@ public class AnomalyDetectionService {
         String verdict;
         String verdictReason;
 
-        if (session.getConfidenceScore() < 0.85) {
-            verdict = "needs_review";
-            verdictReason = "low_confidence";
-        } else if (history.size() < 3) {
+        if (history.size() < 3) {
             verdict = "needs_review";
             verdictReason = "insufficient_data";
         } else {
@@ -45,6 +42,9 @@ public class AnomalyDetectionService {
             if (ordinal < mean - 2 * stdDev || ordinal > mean + 2 * stdDev) {
                 verdict = "needs_review";
                 verdictReason = "deviation";
+            } else if (session.getConfidenceScore() < 0.85) {
+                verdict = "needs_review";
+                verdictReason = "low_confidence";
             } else {
                 verdict = "verified";
                 verdictReason = null;
