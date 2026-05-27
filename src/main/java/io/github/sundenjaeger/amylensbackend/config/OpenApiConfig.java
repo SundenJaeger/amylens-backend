@@ -16,7 +16,7 @@ public class OpenApiConfig {
                         .description(
                                 "REST API for the AmyLens server (Module 3). " +
                                         "Consumed by Module 1 (device auth), Module 2 (session submission), and Module 4 (dashboard). " +
-                                        "All dashboard endpoints require a valid login session via POST /api/auth/login."
+                                        "All dashboard endpoints require a valid login session via POST /login."
                         )
                         .version("1.0.0")
                 );
