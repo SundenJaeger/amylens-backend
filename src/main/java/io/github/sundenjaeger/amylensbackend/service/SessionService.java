@@ -96,6 +96,7 @@ public class SessionService {
 
         session.setVerdict(dto.action().equalsIgnoreCase("ACCEPT") ? "verified" : "REJECTED");
         session.setReviewerIdentity(dto.reviewerIdentity());
+        session.setReviewerTimestamp(Instant.now());
         session.setNeedsReview(false);
 
         return sessionRepository.save(session);

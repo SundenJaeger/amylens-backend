@@ -71,6 +71,10 @@ public class Session {
     @Schema(description = "Note recorded by the team lead on rejection. Null if not rejected.", example = "Sample was contaminated")
     private String reviewerNote;
 
+    @Column(name = "reviewer_timestamp")
+    @Schema(description = "Timestamp when the review was recorded on the server. Null if not yet reviewed.", example = "2026-05-25T09:05:00.000Z")
+    private Instant reviewerTimestamp;
+
     @Column(name = "trial_stage", nullable = false)
     @Schema(description = "Trial stage of this session", example = "OYT", allowableValues = {"OYT", "PYT", "MET", "NCT"})
     private String trialStage;
