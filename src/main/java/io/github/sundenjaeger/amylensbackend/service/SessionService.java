@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -98,5 +99,17 @@ public class SessionService {
         session.setNeedsReview(false);
 
         return sessionRepository.save(session);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Session> export(String variety, String status, Instant dateFrom, Instant dateTo) {
+        List<Session> sessions = findAll(variety, status);
+
+        return sessions.stream()
+                .filter(s -> {
+                    if (dateFrom != null && s.getSubmittedAt() != null && s.getSubmittedAt().isBefore(dateFrom)) return false;
+                    if (dateTo != null && s.getSubmittedAt() != null && s.getSubmittedAt().isAfter(dateTo)) return false;
+                    return true;
+                }).toList();
     }
 }
