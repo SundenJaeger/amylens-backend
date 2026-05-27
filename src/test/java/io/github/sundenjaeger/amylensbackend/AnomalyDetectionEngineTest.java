@@ -55,9 +55,13 @@ public class AnomalyDetectionEngineTest {
         session.setAmyloseClass("Intermediate");
         session.setConfidenceScore(0.80);
 
-        when(gqrisRepo.findByVariety("IR64"))
-                .thenReturn(List.of());
+        List<GqrisMirror> history = List.of(
+                mirrorRecord("IR64", 3, 2023),
+                mirrorRecord("IR64", 3, 2022),
+                mirrorRecord("IR64", 3, 2021)
+        );
 
+        when(gqrisRepo.findByVariety("IR64")).thenReturn(history);
         when(sessionRepository.save(any())).thenReturn(session);
 
         anomalyDetectionService.processAsync(session);
