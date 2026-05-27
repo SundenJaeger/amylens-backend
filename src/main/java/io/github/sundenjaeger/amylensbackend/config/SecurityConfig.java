@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,11 +33,11 @@ public class SecurityConfig {
         return security
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/devices/register").permitAll()
-                        .requestMatchers("/api/devices/auth").permitAll()
-                        .requestMatchers("/api/devices/*/users").permitAll()
-                        .requestMatchers("/api/varieties").permitAll()
-                        .requestMatchers("/api/sessions").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/devices/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/devices/auth").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/devices/*/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/varieties").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/sessions").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
