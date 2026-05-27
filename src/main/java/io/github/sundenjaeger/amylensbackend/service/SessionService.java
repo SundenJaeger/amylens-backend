@@ -87,10 +87,13 @@ public class SessionService {
             if (dto.reviewerNote() == null || dto.reviewerNote().isBlank()) {
                 throw new MissingReviewNoteException("A note is required when rejecting a session");
             }
+        }
+
+        if (dto.reviewerNote() != null && !dto.reviewerNote().isBlank()) {
             session.setReviewerNote(dto.reviewerNote());
         }
 
-        session.setVerdict(dto.action().equalsIgnoreCase("ACCEPT") ? "ACCEPTED" : "REJECTED");
+        session.setVerdict(dto.action().equalsIgnoreCase("ACCEPT") ? "verified" : "REJECTED");
         session.setReviewerIdentity(dto.reviewerIdentity());
         session.setNeedsReview(false);
 
