@@ -1,0 +1,8 @@
+target
+build
+.gradle
+.idea
+.vscode
+.git
+Dockerfile
+README.md
