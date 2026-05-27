@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .requestMatchers("/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .cors(cors -> {
+                })
                 .formLogin(form -> form
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/api/devices", true)
