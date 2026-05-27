@@ -44,13 +44,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginProcessingUrl("/api/auth/login")
+                        .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/api/devices", true)
                         .failureUrl("/api/auth/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")
+                        .logoutUrl("/logout")
                         .logoutSuccessHandler((request, response, authentication) ->
                                 response.setStatus(HttpServletResponse.SC_OK))
                         .permitAll()
