@@ -24,6 +24,7 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
 
     @Transactional
+    @CacheEvict(value = {"devices", "allDevices"}, allEntries = true)
     public Device register(DeviceRegistration registration) {
         return deviceRepository.findBySsaid(registration.ssaid())
                 .orElseGet(() -> {
@@ -57,6 +58,7 @@ public class DeviceService {
         return device.getLinkedUserNames();
     }
 
+    @Transactional(readOnly = true)
     @Cacheable("allDevices")
     public List<Device> findAll() {
         return deviceRepository.findAll();
