@@ -2,10 +2,7 @@
 
 package io.github.sundenjaeger.amylensbackend.handler;
 
-import io.github.sundenjaeger.amylensbackend.exception.DeviceAlreadyExistException;
-import io.github.sundenjaeger.amylensbackend.exception.MissingReviewNoteException;
-import io.github.sundenjaeger.amylensbackend.exception.SessionNotFoundException;
-import io.github.sundenjaeger.amylensbackend.exception.UnauthorizedDeviceException;
+import io.github.sundenjaeger.amylensbackend.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.*;
@@ -78,6 +75,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                            HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problemDetail.setTitle("Device already exist");
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return ResponseEntity.of(problemDetail).build();
+    }
+
+    @ExceptionHandler(VarietyNotFoundException.class)
+    public ResponseEntity<ProblemDetail> handleVarietyNotFoundException(VarietyNotFoundException ex,
+                                                                        HttpServletRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setTitle("Variety not found");
         problemDetail.setInstance(URI.create(request.getRequestURI()));
 
         return ResponseEntity.of(problemDetail).build();
