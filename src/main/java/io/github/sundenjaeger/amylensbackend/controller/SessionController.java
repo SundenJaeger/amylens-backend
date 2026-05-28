@@ -83,10 +83,8 @@ public class SessionController {
             return ResponseEntity.ok(rows);
         }
 
-        // Default to CSV
         StringBuilder sb = new StringBuilder();
-        // Header (14 columns)
-        sb.append("id,deviceSsid,userName,variety,amyloseClass,confidenceScore,capturedAt,submittedAt,verdict,verdictReason,trialStage,season,imageHash,reviewerIdentity\n");
+        sb.append("id,deviceSsid,userName,variety,amyloseClass,confidenceScore,capturedAt,submittedAt,verdict,verdictReason,needsReview,trialStage,season,imageHash,reviewerIdentity,reviewerNote,reviewerTimestamp\n");
         for (Session s : rows) {
             sb.append(s.getId()).append(',')
                     .append(escape(s.getDeviceSsid())).append(',')
@@ -98,10 +96,13 @@ public class SessionController {
                     .append(s.getSubmittedAt() != null ? s.getSubmittedAt().toString() : "").append(',')
                     .append(escape(s.getVerdict())).append(',')
                     .append(escape(s.getVerdictReason())).append(',')
+                    .append(s.getNeedsReview() != null ? s.getNeedsReview() : "").append(',')
                     .append(escape(s.getTrialStage())).append(',')
                     .append(escape(s.getSeason())).append(',')
                     .append(escape(s.getImageHash())).append(',')
-                    .append(escape(s.getReviewerIdentity())).append('\n');
+                    .append(escape(s.getReviewerIdentity())).append(',')
+                    .append(escape(s.getReviewerNote())).append(',')
+                    .append(s.getReviewerTimestamp() != null ? s.getReviewerTimestamp().toString() : "").append('\n');
         }
 
         byte[] bytes = sb.toString().getBytes(StandardCharsets.UTF_8);
@@ -121,7 +122,7 @@ public class SessionController {
     private static String escape(String v) {
         if (v == null) return "";
         String s = v.replace("\"", "\"\"");
-        if (s.contains(",") || s.contains("\n") || s.contains("\r")) {
+        if (s.contains(",") || s.contains("\n") || s.contains("\r") || s.contains("\"")) {
             return '"' + s + '"';
         }
         return s;
