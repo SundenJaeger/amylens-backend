@@ -5,12 +5,14 @@ package io.github.sundenjaeger.amylensbackend.service;
 import io.github.sundenjaeger.amylensbackend.dto.DeviceAuthResponse;
 import io.github.sundenjaeger.amylensbackend.dto.DeviceRegistration;
 import io.github.sundenjaeger.amylensbackend.enums.DeviceStatus;
+import io.github.sundenjaeger.amylensbackend.exception.DeviceAlreadyExistException;
 import io.github.sundenjaeger.amylensbackend.exception.UnauthorizedDeviceException;
 import io.github.sundenjaeger.amylensbackend.model.Device;
 import io.github.sundenjaeger.amylensbackend.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,16 +28,23 @@ public class DeviceService {
     @Transactional
     @CacheEvict(value = {"devices", "allDevices"}, allEntries = true)
     public Device register(DeviceRegistration registration) {
-        return deviceRepository.findBySsaid(registration.ssaid())
-                .orElseGet(() -> {
-                    Device device = new Device();
-                    device.setSsaid(registration.ssaid());
-                    device.setDeviceLabel(registration.deviceLabel());
-                    device.setStatus(DeviceStatus.PENDING);
-                    device.setLinkedUserNames(new ArrayList<>());
-
-                    return deviceRepository.save(device);
+        deviceRepository.findBySsaid(registration.ssaid())
+                .ifPresent(device -> {
+                    throw new DeviceAlreadyExistException("Device with SSAID already exists: " + device.getSsaid());
                 });
+
+        try {
+            Device device = new Device();
+            device.setSsaid(registration.ssaid());
+            device.setDeviceLabel(registration.deviceLabel());
+            device.setStatus(DeviceStatus.PENDING);
+            device.setLinkedUserNames(new ArrayList<>());
+
+            return deviceRepository.save(device);
+        } catch (DataIntegrityViolationException e) {
+            return deviceRepository.findBySsaid(registration.ssaid())
+                    .orElseThrow(() -> e);
+        }
     }
 
     @Transactional(readOnly = true)

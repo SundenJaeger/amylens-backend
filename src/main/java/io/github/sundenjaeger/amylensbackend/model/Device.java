@@ -26,7 +26,7 @@ public class Device {
     @Schema(description = "Auto-generated database ID", example = "1")
     private Long id;
 
-    @Column(name = "ssaid", nullable = false)
+    @Column(name = "ssaid", nullable = false, unique = true)
     @Schema(description = "Android SSAID — unique persistent device identifier", example = "test-device-001")
     private String ssaid;
 

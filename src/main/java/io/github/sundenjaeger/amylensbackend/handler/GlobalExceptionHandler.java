@@ -2,6 +2,7 @@
 
 package io.github.sundenjaeger.amylensbackend.handler;
 
+import io.github.sundenjaeger.amylensbackend.exception.DeviceAlreadyExistException;
 import io.github.sundenjaeger.amylensbackend.exception.MissingReviewNoteException;
 import io.github.sundenjaeger.amylensbackend.exception.SessionNotFoundException;
 import io.github.sundenjaeger.amylensbackend.exception.UnauthorizedDeviceException;
@@ -67,6 +68,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
         problemDetail.setTitle("Unauthorized Device");
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return ResponseEntity.of(problemDetail).build();
+    }
+
+    @ExceptionHandler(DeviceAlreadyExistException.class)
+    public ResponseEntity<ProblemDetail> handleDeviceAlreadyExistException(DeviceAlreadyExistException ex,
+                                                                           HttpServletRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problemDetail.setTitle("Device already exist");
         problemDetail.setInstance(URI.create(request.getRequestURI()));
 
         return ResponseEntity.of(problemDetail).build();
