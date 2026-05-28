@@ -4,6 +4,7 @@ package io.github.sundenjaeger.amylensbackend.service;
 
 import io.github.sundenjaeger.amylensbackend.dto.VarietyRequest;
 import io.github.sundenjaeger.amylensbackend.dto.VarietyResponse;
+import io.github.sundenjaeger.amylensbackend.exception.VarietyAlreadyExistException;
 import io.github.sundenjaeger.amylensbackend.exception.VarietyNotFoundException;
 import io.github.sundenjaeger.amylensbackend.model.Variety;
 import io.github.sundenjaeger.amylensbackend.repository.VarietyRepository;
@@ -23,6 +24,11 @@ public class VarietyService {
     @Transactional
     @CacheEvict(value = "varieties", allEntries = true)
     public VarietyResponse create(VarietyRequest request) {
+        varietyRepository.findByName(request.name())
+                .ifPresent(variety -> {
+                    throw new VarietyAlreadyExistException("This variety already exist: " + variety.getName());
+                });
+
         Variety variety = new Variety();
         variety.setName(request.name());
         variety.setDescription(request.description());

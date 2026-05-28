@@ -21,7 +21,7 @@ public class Variety {
     @Schema(description = "Auto-generated database ID", example = "1")
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     @Schema(description = "Rice variety name", example = "IR64")
     private String name;
 

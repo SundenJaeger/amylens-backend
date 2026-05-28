@@ -71,7 +71,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(DeviceAlreadyExistException.class)
-    public ResponseEntity<ProblemDetail> handleDeviceAlreadyExistException(DeviceAlreadyExistException ex,
+    public ResponseEntity<ProblemDetail> handleDeviceAlreadyExist(DeviceAlreadyExistException ex,
                                                                            HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problemDetail.setTitle("Device already exist");
@@ -81,10 +81,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(VarietyNotFoundException.class)
-    public ResponseEntity<ProblemDetail> handleVarietyNotFoundException(VarietyNotFoundException ex,
+    public ResponseEntity<ProblemDetail> handleVarietyNotFound(VarietyNotFoundException ex,
                                                                         HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setTitle("Variety not found");
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return ResponseEntity.of(problemDetail).build();
+    }
+
+    @ExceptionHandler(VarietyAlreadyExistException.class)
+    public ResponseEntity<ProblemDetail> handleVarietyAlreadyExist(VarietyAlreadyExistException ex,
+                                                                        HttpServletRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problemDetail.setTitle("Variety already exist");
         problemDetail.setInstance(URI.create(request.getRequestURI()));
 
         return ResponseEntity.of(problemDetail).build();
