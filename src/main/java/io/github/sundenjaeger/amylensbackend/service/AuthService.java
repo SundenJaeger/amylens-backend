@@ -6,6 +6,7 @@ import io.github.sundenjaeger.amylensbackend.config.CustomUserDetails;
 import io.github.sundenjaeger.amylensbackend.dto.RegisterRequest;
 import io.github.sundenjaeger.amylensbackend.dto.RegisterResponse;
 import io.github.sundenjaeger.amylensbackend.enums.RoleType;
+import io.github.sundenjaeger.amylensbackend.exception.UserAlreadyExistException;
 import io.github.sundenjaeger.amylensbackend.model.User;
 import io.github.sundenjaeger.amylensbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,11 @@ public class AuthService implements UserDetailsService {
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
+        userRepository.findByUsername(request.username())
+                .ifPresent(user -> {
+                    throw new UserAlreadyExistException("This user already exist: " + user.getUsername());
+                });
+
         User user = new User();
         user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));

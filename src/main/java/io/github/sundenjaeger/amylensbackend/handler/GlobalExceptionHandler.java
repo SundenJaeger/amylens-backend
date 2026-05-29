@@ -72,7 +72,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DeviceAlreadyExistException.class)
     public ResponseEntity<ProblemDetail> handleDeviceAlreadyExist(DeviceAlreadyExistException ex,
-                                                                           HttpServletRequest request) {
+                                                                  HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problemDetail.setTitle("Device already exist");
         problemDetail.setInstance(URI.create(request.getRequestURI()));
@@ -82,7 +82,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(VarietyNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleVarietyNotFound(VarietyNotFoundException ex,
-                                                                        HttpServletRequest request) {
+                                                               HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setTitle("Variety not found");
         problemDetail.setInstance(URI.create(request.getRequestURI()));
@@ -92,9 +92,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(VarietyAlreadyExistException.class)
     public ResponseEntity<ProblemDetail> handleVarietyAlreadyExist(VarietyAlreadyExistException ex,
-                                                                        HttpServletRequest request) {
+                                                                   HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problemDetail.setTitle("Variety already exist");
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return ResponseEntity.of(problemDetail).build();
+    }
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<ProblemDetail> handleUserAlreadyExist(UserAlreadyExistException ex,
+                                                                HttpServletRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problemDetail.setTitle("User already exist");
         problemDetail.setInstance(URI.create(request.getRequestURI()));
 
         return ResponseEntity.of(problemDetail).build();
