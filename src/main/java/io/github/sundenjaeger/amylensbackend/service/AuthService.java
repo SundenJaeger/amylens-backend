@@ -49,18 +49,15 @@ public class AuthService implements UserDetailsService {
         return new RegisterResponse(saved.getId(), saved.getUsername(), saved.getRole());
     }
 
-//    @Transactional
-//    public void resetPassword(String username, String currentPassword, String newPassword) {
-//        UserDetails user = userDetailsService.loadUserByUsername(username);
-//
-//        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-//            throw new BadCredentialsException("Current password is incorrect");
-//        }
-//
-//        User lead = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new BadCredentialsException("User not found"));
-//
-//        lead.setPassword(passwordEncoder.encode(newPassword));
-//        userRepository.save(lead);
-//    }
+    @Transactional
+    public void resetPassword(String username, String currentPassword, String newPassword) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new BadCredentialsException("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+    }
 }
