@@ -94,4 +94,14 @@ public class DeviceService {
 
         return deviceRepository.save(device);
     }
+
+    public List<String> getAllResearchers() {
+        return deviceRepository.findAll()
+                .stream()
+                .filter(device -> device.getStatus() == DeviceStatus.APPROVED)
+                .flatMap(device -> device.getLinkedUserNames().stream())
+                .distinct()
+                .sorted()
+                .toList();
+    }
 }

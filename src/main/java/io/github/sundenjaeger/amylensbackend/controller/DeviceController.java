@@ -93,4 +93,15 @@ public class DeviceController {
     public ResponseEntity<Device> deny(@PathVariable Long id) {
         return ResponseEntity.ok(deviceService.deny(id));
     }
+
+    @GetMapping("/researchers")
+    @Operation(
+            summary = "Get all researchers",
+            description = "Returns a deduplicated, sorted list of all researcher names linked to approved devices. " +
+                    "No SSAID required. Called by Module 4 dashboard for displaying researcher lists."
+    )
+    @ApiResponse(responseCode = "200", description = "List of all researcher names across all approved devices")
+    public ResponseEntity<List<String>> getAllResearchers() {
+        return ResponseEntity.ok(deviceService.getAllResearchers());
+    }
 }
