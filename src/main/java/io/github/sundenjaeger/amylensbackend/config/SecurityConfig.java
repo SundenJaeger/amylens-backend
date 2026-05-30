@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +26,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -50,22 +52,23 @@ public class SecurityConfig {
                 .securityContext(ctx -> ctx
                         .securityContextRepository(securityContextRepository()))
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(HttpMethod.POST, "/api/devices/register").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/devices/auth").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/devices/*/users").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/varieties").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/sessions").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/devices/researchers").permitAll()
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/swagger-ui.html").permitAll()
-                                .requestMatchers("/api-docs/**").permitAll()
-                                .requestMatchers("/api/auth/login").permitAll()
-                                .requestMatchers("/api/auth/register").permitAll()
-                                .requestMatchers("/api/auth/logout").permitAll()
-                                .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/devices/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/devices/auth").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/devices/*/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/varieties").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/sessions").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/devices/researchers").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/api-docs/**").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/logout").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .cors(cors -> {
-                })
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource)
+                )
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) ->
