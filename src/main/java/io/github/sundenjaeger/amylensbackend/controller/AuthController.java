@@ -4,13 +4,12 @@ package io.github.sundenjaeger.amylensbackend.controller;
 
 import io.github.sundenjaeger.amylensbackend.config.CustomUserDetails;
 import io.github.sundenjaeger.amylensbackend.dto.*;
-import io.github.sundenjaeger.amylensbackend.model.User;
 import io.github.sundenjaeger.amylensbackend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,8 +18,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,24 +31,36 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
+    private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request,
-                                               HttpServletRequest servletRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+                                               HttpServletRequest servletRequest,
+                                               HttpServletResponse servletResponse) {
+        try {
+            UsernamePasswordAuthenticationToken unauthenticatedToken = UsernamePasswordAuthenticationToken
+                    .unauthenticated(request.username(), request.password());
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        HttpSession session = servletRequest.getSession(true);
-        session.setAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                SecurityContextHolder.getContext()
-        );
+            Authentication authentication = authenticationManager.authenticate(unauthenticatedToken);
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
+            SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+            context.setAuthentication(authentication);
 
-        return ResponseEntity.ok(new LoginResponse(user.getId(), user.getUsername(), user.getRole()));
+            securityContextHolderStrategy.setContext(context);
+
+            securityContextRepository.saveContext(context, servletRequest, servletResponse);
+
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            return ResponseEntity.ok(new LoginResponse(
+                    userDetails.getUser().getId(),
+                    userDetails.getUsername(),
+                    userDetails.getUser().getRole()
+            ));
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Invalid name or password");
+        }
     }
 
     @PostMapping("/register")
@@ -80,16 +93,5 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-        SecurityContextHolder.clearContext();
-
-        return ResponseEntity.ok().build();
     }
 }

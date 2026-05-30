@@ -1,5 +1,8 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 package io.github.sundenjaeger.amylensbackend.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,23 +62,17 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/login").permitAll()
                                 .requestMatchers("/api/auth/register").permitAll()
                                 .requestMatchers("/api/auth/logout").permitAll()
-//                                .anyRequest().permitAll()
                                 .anyRequest().authenticated()
                 )
                 .cors(cors -> {
                 })
-//                .formLogin(form -> form
-//                        .loginProcessingUrl("/login")
-//                        .defaultSuccessUrl("/api/devices", true)
-//                        .failureUrl("/login?error=true")
-//                        .permitAll()
-//                )
-//                .logout(logout -> logout
-//                        .logoutUrl("/logout")
-//                        .logoutSuccessHandler((request, response, authentication) ->
-//                                response.setStatus(HttpServletResponse.SC_OK))
-//                        .permitAll()
-//                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout")
+                        .logoutSuccessHandler((request, response, authentication) ->
+                                response.setStatus(HttpServletResponse.SC_OK))
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
