@@ -1,7 +1,10 @@
 # AmyLens Backend
 
-> **Module 3 — Automated Anomaly Detection & Data Management**  
-> Spring Boot REST API server for the AmyLens rice grain amylose classification system.
+>[!NOTE]
+> This repository is archived because it was created solely for school purposes and is no longer maintained.
+
+**Module 3 — Automated Anomaly Detection & Data Management**  
+Spring Boot REST API server for the AmyLens rice grain amylose classification system.
 
 ---
 
